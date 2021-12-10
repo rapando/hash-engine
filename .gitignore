@@ -1,0 +1,7 @@
+.vscode
+.idea
+logs
+*.log
+hash-engine
+tmp
+build
