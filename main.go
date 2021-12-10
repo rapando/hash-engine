@@ -46,13 +46,15 @@ func main() {
 		"mnbvcxz~!@#$%^&*()_+|}{POIUYTREWQASDFGHJKL:\"?><MNBVCXZ")
 	var n = len(chars)
 
-	// var stopChan = make(chan bool)
-	// for i := 1; i <= n; i++ {
-	// 	section := chars[0:i]
-	// 	go permute(base.ctx, section, 0, len(section)-1, base.cache)
-	// }
-	// go md5engine.MD5Subscriber(base.ctx, base.cache, base.db)
-	// <-stopChan
+	//1. get all permutations at once,
+	//2. Save all permutations to a table
+
+	// -------- use a different app -----------
+	// TODO : use different tables for different hash methods and link to the main table
+	// 1. Read from the table
+	// 2. Use goroutines to hash and send to rabbitmq
+	// 3. consume and save to db
+	
 }
 
 func getNoOfPossibilities(length int) (possibilities int) {
@@ -74,4 +76,5 @@ func factorial(n int) (f int) {
 	}
 	return f
 }
-func differentFlagPermutations()
+
+func differentFlagPermutations() {}
