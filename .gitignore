@@ -5,3 +5,4 @@ logs
 hash-engine
 tmp
 build
+.env
