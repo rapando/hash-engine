@@ -1,14 +1,13 @@
 package models
 
 import (
-	"context"
 	"fmt"
 	"math/big"
+	"os"
 	"strings"
-	"sync"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/rapando/hash-engine/utils"
+	"github.com/streadway/amqp"
 )
 
 // GetNoOfCombinations
@@ -30,12 +29,18 @@ func GetNoOfCombinations(length int64) *big.Int {
 	return combinations.Mul(combinations, big.NewInt(length))
 }
 
-func GetCombinations(wg *sync.WaitGroup, ctx context.Context, chars string, cache *redis.Client) {
-	defer wg.Done()
+func GetCombinations(chars string, totalCount *big.Int, qChan *amqp.Channel) {
 	var ml = strings.Split(chars, "")
-
+	var exchange = os.Getenv("Q_EXCHANGE")
+	var totalCountFlt = new(big.Float).SetInt(totalCount)
+	var counter = big.NewFloat(1)
+	var percentage = new(big.Float)
 	for _, c := range ml {
-		utils.Publish(ctx, c, cache)
+		_ = utils.QPublish(qChan, exchange, c)
+		counter.Add(counter, big.NewFloat(1))
+		percentage = new(big.Float).Quo(counter, totalCountFlt)
+		fmt.Printf("[%.2f%%]\r", percentage.Mul(percentage, big.NewFloat(100)))
+
 	}
 
 	for z := 0; z < len(chars)-1; z++ {
@@ -44,8 +49,11 @@ func GetCombinations(wg *sync.WaitGroup, ctx context.Context, chars string, cach
 			for _, k := range ml {
 				if !strings.Contains(k, string(i)) {
 					x := fmt.Sprintf("%s%c", k, i)
-					utils.Publish(ctx, x, cache)
+					_ = utils.QPublish(qChan, exchange, x)
 					tmp = append(tmp, x)
+					counter.Add(counter, big.NewFloat(1))
+					percentage = new(big.Float).Quo(counter, totalCountFlt)
+					fmt.Printf("[%.2f%%]\r", percentage.Mul(percentage, big.NewFloat(100)))
 				}
 			}
 		}
