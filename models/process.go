@@ -43,6 +43,7 @@ func Process() {
 
 	var chars = "`1234567890-=\\][poiuytrewqasdfghjkl;'/.," +
 		"mnbvcxz~!@#$%^&*()_+|}{POIUYTREWQASDFGHJKL:\"?><MNBVCXZ "
+	chars = "randomcharacters"
 	var n = int64(len(chars))
 
 	combinations := GetNoOfCombinations(n)
